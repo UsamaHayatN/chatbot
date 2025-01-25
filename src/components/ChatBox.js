@@ -1,35 +1,33 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
-import { MdClose, MdRefresh } from "react-icons/md"; // Import React Icons
-import HeroSection from "./HeroSection"; // Import the HeroSection component
+import { MdClose, MdRefresh } from "react-icons/md";
+import { FaUserAlt } from "react-icons/fa";
 import "tailwindcss/tailwind.css";
+import HeroSection from "./HeroSection";
 
 const ChatBox = ({ setOpen }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const inputRef = useRef(null); // Reference for input field
-  const chatContainerRef = useRef(null); // Reference for chat container
+  const [isBotTyping, setIsBotTyping] = useState(false);
+  const inputRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
-    // Retrieve messages from localStorage if they exist
     const savedMessages = JSON.parse(localStorage.getItem("chatMessages"));
     if (savedMessages) {
       setMessages(savedMessages);
     }
-
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, []);
 
   useEffect(() => {
-    // Save the messages to localStorage whenever the messages array changes
     if (messages.length > 0) {
       localStorage.setItem("chatMessages", JSON.stringify(messages));
     }
-
-    // Scroll chat container to the bottom when new messages arrive
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
@@ -38,33 +36,35 @@ const ChatBox = ({ setOpen }) => {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-
-    // Add user message to the chat
     setMessages((prev) => [...prev, { user: "me", text: input }]);
-
-    try {
-      // Call the backend API
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
-      });
-
-      const data = await res.json();
-
-      if (data.message) {
-        // Add bot reply to the chat
-        setMessages((prev) => [...prev, { user: "bot", text: data.message }]);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setMessages((prev) => [
-        ...prev,
-        { user: "bot", text: "Sorry, something went wrong. Please try again." },
-      ]);
-    }
-
     setInput("");
+
+    setIsBotTyping(true);
+    setTimeout(async () => {
+      setIsBotTyping(false);
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: input }),
+        });
+
+        const data = await res.json();
+        if (data.message) {
+          setMessages((prev) => [...prev, { user: "bot", text: data.message }]);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setMessages((prev) => [
+          ...prev,
+          {
+            user: "bot",
+            text: "Sorry, something went wrong. Please try again.",
+          },
+        ]);
+      }
+    }, 2000);
   };
 
   const resetChat = () => {
@@ -73,23 +73,19 @@ const ChatBox = ({ setOpen }) => {
   };
 
   return (
-    <div className="fixed bottom-24 right-5 bg-gray-900 rounded-2xl shadow-xl w-full max-w-md h-[800px] flex flex-col border border-gray-700 overflow-hidden">
+    <div className="fixed bottom-24 right-5 bg-gray-900 rounded-2xl shadow-xl w-full sm:w-[500px] h-[80vh] max-h-[800px] flex flex-col border border-gray-700 overflow-hidden">
       {/* Header */}
       <div className="flex items-center bg-[#1eea66] p-4 rounded-t-2xl">
-        <span className="ml-3 text-white font-bold text-lg">ChatBot</span>
-
-        {/* Close Button (on the left) */}
+        <span className="ml-3 text-black font-bold text-lg">Solvars.Ai</span>
         <button
           onClick={resetChat}
-          className="ml-auto text-white text-2xl font-semibold hover:text-gray-300"
+          className="ml-auto text-black text-2xl font-semibold hover:text-gray-300"
         >
           <MdRefresh />
         </button>
-
-        {/* Reset Button (on the right) */}
         <button
           onClick={() => setOpen(false)}
-          className="ml-3 text-white text-xl font-semibold hover:text-gray-300"
+          className="ml-3 text-black text-xl font-semibold hover:text-gray-300"
         >
           <MdClose />
         </button>
@@ -98,45 +94,92 @@ const ChatBox = ({ setOpen }) => {
       {/* Chat Section */}
       <div
         ref={chatContainerRef}
-        className="flex-1 p-4 space-y-4 bg-gray-900 overflow-y-scroll"
+        className="flex-1 p-4 space-y-4 bg-gray-900 overflow-y-auto"
         style={{
           scrollBehavior: "smooth",
-          scrollbarWidth: "none", // Firefox
-          msOverflowStyle: "none", // Internet Explorer 10+
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
-        {/* Hero Section should be part of the scrollable content */}
         <HeroSection />
 
-        {/* Messages */}
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`max-w-[75%] p-3 rounded-lg text-sm md:text-base shadow-md whitespace-pre-wrap ${
-              msg.user === "me"
-                ? "bg-[#1eea66] text-white ml-auto"
-                : "bg-gray-700 text-gray-300 mr-auto"
+            className={`flex items-start space-x-3 ${
+              msg.user === "me" ? "justify-end" : "justify-start"
             }`}
           >
-            {msg.text}
+            {msg.user === "bot" && (
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <Image
+                    src="/images/solvars-icon.png"
+                    alt="Bot Icon"
+                    width={40}
+                    height={40}
+                    className="rounded-full"
+                  />
+                </div>
+                <div className="bg-gray-700 text-gray-300 p-3 rounded-lg ml-3 max-w-[75%] shadow-md text-sm md:text-base whitespace-pre-wrap">
+                  {msg.text}
+                </div>
+              </div>
+            )}
+
+            {msg.user === "me" && (
+              <div className="flex items-end justify-end">
+                <div className="bg-[#1eea66] text-black p-3 rounded-lg mr-3 max-w-[75%] shadow-md text-sm md:text-base whitespace-pre-wrap">
+                  {msg.text}
+                </div>
+                <div className="flex-shrink-0">
+                  <FaUserAlt className="text-[#1eea66] text-2xl" />
+                </div>
+              </div>
+            )}
           </div>
         ))}
+
+        {isBotTyping && (
+          <div className="flex items-center space-x-2 justify-start">
+            <div className="flex-shrink-0">
+              <Image
+                src="/images/solvars-icon.png"
+                alt="Bot Icon"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-150"></span>
+              <span className="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-300"></span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Input */}
+      {/* Input Section */}
       <div className="flex items-center p-4 border-t bg-gray-800">
-        <input
+        <textarea
           ref={inputRef}
-          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
+          rows={1}
           placeholder="Type your message..."
-          className="flex-1 px-4 py-3 border border-gray-600 rounded-full bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1eea66] focus:border-[#1eea66]"
+          className="flex-1 px-4 py-3 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1eea66] focus:border-[#1eea66] resize-none overflow-hidden"
+          style={{ lineHeight: "1.5" }}
+          onInput={(e) => {
+            // Adjust the height dynamically
+            e.target.style.height = "auto";
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
         />
         <button
           onClick={sendMessage}
-          className="ml-3 bg-[#1eea66] text-white px-5 py-3 rounded-full font-semibold hover:bg-green-500 transition"
+          className="ml-3 bg-[#1eea66] text-black px-5 py-3 rounded-md font-semibold hover:bg-green-500 transition"
         >
           Send
         </button>

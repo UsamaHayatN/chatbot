@@ -25,9 +25,9 @@ const WidgetButton = () => {
         className="fixed bottom-5 right-5 w-16 h-16 bg-[#1eea66] rounded-full cursor-pointer shadow-lg z-50 flex items-center justify-center"
       >
         {open ? (
-          <FiX className="text-white text-3xl" />
+          <FiX className="text-black text-3xl" />
         ) : (
-          <FiMessageSquare className="text-white text-3xl" />
+          <FiMessageSquare className="text-black text-3xl" />
         )}
       </div>
 
