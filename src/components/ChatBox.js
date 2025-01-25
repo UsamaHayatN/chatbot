@@ -1,12 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
+import { useEffect, useState, useRef } from "react";
+import { MdClose, MdRefresh } from "react-icons/md"; // Import React Icons
+import HeroSection from "./HeroSection"; // Import the HeroSection component
 import "tailwindcss/tailwind.css";
 
 const ChatBox = ({ setOpen }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const inputRef = useRef(null); // Reference for input field
+  const chatContainerRef = useRef(null); // Reference for chat container
+
+  useEffect(() => {
+    // Retrieve messages from localStorage if they exist
+    const savedMessages = JSON.parse(localStorage.getItem("chatMessages"));
+    if (savedMessages) {
+      setMessages(savedMessages);
+    }
+
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    // Save the messages to localStorage whenever the messages array changes
+    if (messages.length > 0) {
+      localStorage.setItem("chatMessages", JSON.stringify(messages));
+    }
+
+    // Scroll chat container to the bottom when new messages arrive
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -36,31 +64,51 @@ const ChatBox = ({ setOpen }) => {
       ]);
     }
 
-    setInput(""); // Clear input field
+    setInput("");
+  };
+
+  const resetChat = () => {
+    setMessages([]);
+    localStorage.removeItem("chatMessages");
   };
 
   return (
-    <div className="fixed bottom-10 right-5 bg-gray-900 rounded-2xl shadow-xl w-full max-w-md h-[600px] flex flex-col border border-gray-700">
+    <div className="fixed bottom-24 right-5 bg-gray-900 rounded-2xl shadow-xl w-full max-w-md h-[800px] flex flex-col border border-gray-700 overflow-hidden">
       {/* Header */}
       <div className="flex items-center bg-[#1eea66] p-4 rounded-t-2xl">
-        <Image
-          src="/images/solvars-icon.png"
-          alt="Solvars Icon"
-          width={30}
-          height={30}
-          className="rounded-full"
-        />
         <span className="ml-3 text-white font-bold text-lg">ChatBot</span>
+
+        {/* Close Button (on the left) */}
         <button
-          onClick={() => setOpen(false)}
+          onClick={resetChat}
           className="ml-auto text-white text-2xl font-semibold hover:text-gray-300"
         >
-          ✖
+          <MdRefresh />
+        </button>
+
+        {/* Reset Button (on the right) */}
+        <button
+          onClick={() => setOpen(false)}
+          className="ml-3 text-white text-xl font-semibold hover:text-gray-300"
+        >
+          <MdClose />
         </button>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-900">
+      {/* Chat Section */}
+      <div
+        ref={chatContainerRef}
+        className="flex-1 p-4 space-y-4 bg-gray-900 overflow-y-scroll"
+        style={{
+          scrollBehavior: "smooth",
+          scrollbarWidth: "none", // Firefox
+          msOverflowStyle: "none", // Internet Explorer 10+
+        }}
+      >
+        {/* Hero Section should be part of the scrollable content */}
+        <HeroSection />
+
+        {/* Messages */}
         {messages.map((msg, idx) => (
           <div
             key={idx}
@@ -78,6 +126,7 @@ const ChatBox = ({ setOpen }) => {
       {/* Input */}
       <div className="flex items-center p-4 border-t bg-gray-800">
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
