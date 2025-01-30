@@ -44,7 +44,6 @@
   closeButton.style.zIndex = "10000";
   closeButton.style.boxShadow = "0px 2px 5px rgba(0, 0, 0, 0.2)";
 
-  // Add the logic to close and show the widget again
   closeButton.onclick = () => {
     widgetContainer.style.display = "none";
     // Optionally, save a flag in localStorage to prevent showing it again for a certain period
