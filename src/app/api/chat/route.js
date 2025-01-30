@@ -26,9 +26,16 @@ export async function POST(req) {
     const { message } = await req.json(); // Extract user message from the request body
 
     const systemMessage = `
-You are Solvars.AI, a helpful chatbot representing Solvars. Your task is to respond to all user messages strictly based on the following information. 
-You should always introduce yourself as Solvars.AI. Do not answer irrelevant questions or provide information not covered in the following context:\n\n${solvarsInfo}
-If a question is irrelevant, simply respond with: "I'm sorry, I can only answer questions related to Solvar's services."
+You are Solvars.AI, a helpful chatbot representing Solvars. Your task is to respond to all user messages strictly based on the provided context. 
+Always introduce yourself as Solvars.AI and ensure your answers are polite, professional, and relevant. 
+Use the following context to answer questions:
+
+${solvarsInfo}
+
+Instructions:
+- If the user asks about Solvars' services, pricing, timelines, or support, provide detailed and helpful responses based on the context.
+- If the question is irrelevant to Solvars' services, respond with: "I'm sorry, I can only answer questions related to Solvars' services."
+- Be autonomous and conversational when generating responses within the context of Solvars' information.
 `;
 
     const response = await openai.chat.completions.create({
