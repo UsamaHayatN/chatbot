@@ -1,13 +1,12 @@
-"use client";
-
+// /components/ChatBox.js
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { MdClose, MdRefresh } from "react-icons/md";
 import { FaUserAlt } from "react-icons/fa";
 import "tailwindcss/tailwind.css";
-import HeroSection from "./HeroSection";
+import HeroSection from "./HeroSection"; // Assume a HeroSection component for the intro.
 
-const ChatBox = ({ setOpen }) => {
+const ChatBox = ({ setOpen, url }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isBotTyping, setIsBotTyping] = useState(false);
@@ -47,7 +46,7 @@ const ChatBox = ({ setOpen }) => {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: input }),
+          body: JSON.stringify({ message: input, url: url }),
         });
 
         const data = await res.json();
@@ -72,11 +71,19 @@ const ChatBox = ({ setOpen }) => {
     localStorage.removeItem("chatMessages");
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      // Prevent Enter from adding new line
+      e.preventDefault(); // Prevent the default behavior
+      sendMessage();
+    }
+  };
+
   return (
     <div className="fixed bottom-24 right-5 bg-gray-900 rounded-2xl shadow-xl w-full sm:w-[500px] h-[80vh] max-h-[800px] flex flex-col border border-gray-700 overflow-hidden">
       {/* Header */}
       <div className="flex items-center bg-[#1eea66] p-4 rounded-t-2xl">
-        <span className="ml-3 text-black font-bold text-lg">Solvars.Ai</span>
+        <span className="ml-3 text-black font-bold text-lg">Solvars AI</span>
         <button
           onClick={resetChat}
           className="ml-auto text-black text-2xl font-semibold hover:text-gray-300"
@@ -102,17 +109,16 @@ const ChatBox = ({ setOpen }) => {
         }}
       >
         <HeroSection />
-
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`flex items-start space-x-3 ${
+            className={`flex ${
               msg.user === "me" ? "justify-end" : "justify-start"
             }`}
           >
             {msg.user === "bot" && (
-              <div className="flex items-start">
-                <div className="flex-shrink-0">
+              <div className="flex items-end">
+                <div className="flex-shrink-0 self-end">
                   <Image
                     src="/images/solvars-icon.png"
                     alt="Bot Icon"
@@ -128,11 +134,11 @@ const ChatBox = ({ setOpen }) => {
             )}
 
             {msg.user === "me" && (
-              <div className="flex items-end justify-end">
-                <div className="bg-[#1eea66] text-black p-3 rounded-lg mr-3 max-w-[75%] shadow-md text-sm md:text-base whitespace-pre-wrap">
+              <div className="flex items-start w-full justify-end">
+                <div className="bg-[#1eea66] text-black p-3 rounded-lg max-w-[75%] shadow-md text-sm md:text-base whitespace-pre-wrap">
                   {msg.text}
                 </div>
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 self-start ml-3">
                   <FaUserAlt className="text-[#1eea66] text-2xl" />
                 </div>
               </div>
@@ -166,7 +172,7 @@ const ChatBox = ({ setOpen }) => {
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
+          onKeyDown={handleKeyDown} // Handle Enter key
           rows={1}
           placeholder="Type your message..."
           className="flex-1 px-4 py-3 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1eea66] focus:border-[#1eea66] resize-none overflow-hidden"
