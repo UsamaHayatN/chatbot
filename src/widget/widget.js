@@ -1,31 +1,84 @@
 (function () {
-  class ChatbotWidget extends HTMLElement {
-    connectedCallback() {
-      // This is where we inject the widget (iframe)
-      this.innerHTML = `
-        <div style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
-          <iframe
-            src="https://chatbot-steel-pi.vercel.app/"
-            width="400"
-            height="600"
-            style="border: none; border-radius: 15px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);"
-            id="chatbot-widget-iframe"
-          ></iframe>
-          <button onclick="this.closest('div').style.display='none';"
-            style="position: absolute; top: 10px; right: 10px; background: #FF4D4D; color: #fff; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10000; box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);">×</button>
-        </div>
-        <button id="open-chatbot-button" onclick="this.closest('div').style.display='block'; this.style.display='none';"
-          style="position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; z-index: 9999;">
-          Open Chatbot
-        </button>
-      `;
-    }
+  const script = document.currentScript;
+  const widgetUrl = script.getAttribute("data-url");
+
+  if (!widgetUrl) {
+    console.error(
+      "Widget URL is missing. Please provide the 'data-url' attribute."
+    );
+    return;
   }
 
-  customElements.define('chatbot-widget', ChatbotWidget);
+  if (!widgetUrl.startsWith("https://")) {
+    console.error("Widget URL must use HTTPS.");
+    return;
+  }
 
-  // Optional: This can be used to dynamically create the chatbot widget
-  const script = document.createElement('script');
-  script.src = 'https://chatbot-steel-pi.vercel.app/widget.js';
-  document.body.appendChild(script);
+  if (document.getElementById("chatbot-widget-container")) {
+    return;
+  }
+
+  const widgetContainer = document.createElement("div");
+  widgetContainer.id = "chatbot-widget-container";
+  widgetContainer.style.position = "fixed";
+  widgetContainer.style.bottom = "20px";
+  widgetContainer.style.right = "20px";
+  widgetContainer.style.zIndex = "9999";
+  document.body.appendChild(widgetContainer);
+
+  const iframe = document.createElement("iframe");
+  iframe.src = widgetUrl;
+  iframe.style.width = "400px";
+  iframe.style.height = "600px";
+  iframe.style.border = "none";
+  iframe.style.borderRadius = "15px";
+  iframe.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+  iframe.id = "chatbot-widget-iframe";
+  widgetContainer.appendChild(iframe);
+
+  const closeButton = document.createElement("button");
+  closeButton.innerText = "×";
+  closeButton.style.position = "absolute";
+  closeButton.style.top = "10px";
+  closeButton.style.right = "10px";
+  closeButton.style.background = "#FF4D4D"; // Example red
+  closeButton.style.color = "#FFFFFF";
+  closeButton.style.border = "none";
+  closeButton.style.borderRadius = "50%";
+  closeButton.style.width = "30px";
+  closeButton.style.height = "30px";
+  closeButton.style.cursor = "pointer";
+  closeButton.style.zIndex = "10000";
+  closeButton.style.boxShadow = "0px 2px 5px rgba(0, 0, 0, 0.2)";
+  closeButton.onclick = () => {
+    widgetContainer.style.display = "none";
+    localStorage.setItem("chatbotClosed", "true");
+  };
+  widgetContainer.appendChild(closeButton);
+
+  if (localStorage.getItem("chatbotClosed") === "true") {
+    widgetContainer.style.display = "none";
+  }
+
+  const openButton = document.createElement("button");
+  openButton.innerText = "Open Chatbot";
+  openButton.style.position = "fixed";
+  openButton.style.bottom = "20px";
+  openButton.style.right = "20px";
+  openButton.style.padding = "10px 20px";
+  openButton.style.backgroundColor = "#4CAF50"; // Example green
+  openButton.style.color = "white";
+  openButton.style.border = "none";
+  openButton.style.borderRadius = "5px";
+  openButton.style.cursor = "pointer";
+  openButton.style.zIndex = "9999";
+  openButton.style.display =
+    localStorage.getItem("chatbotClosed") === "true" ? "block" : "none"; // Show only if closed
+
+  openButton.onclick = () => {
+    widgetContainer.style.display = "block";
+    localStorage.removeItem("chatbotClosed");
+    openButton.style.display = "none";
+  };
+  document.body.appendChild(openButton);
 })();
