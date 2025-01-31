@@ -82,7 +82,7 @@ const ChatBox = ({ setOpen, url }) => {
   return (
     <div
       id="chatbot-container"
-      className="fixed bottom-24 right-5 bg-gray-900 rounded-2xl shadow-xl w-[600px] h-[90vh] max-h-[900px] flex flex-col border border-gray-700 overflow-hidden"
+      className="fixed bottom-24 right-5 bg-gray-900 rounded-2xl shadow-xl w-[25vw] h-[70vh] max-h-[900px] flex flex-col border border-gray-700 overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-center bg-[#1eea66] p-4 rounded-t-2xl">
