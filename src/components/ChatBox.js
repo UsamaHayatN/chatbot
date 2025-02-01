@@ -81,16 +81,9 @@ const ChatBox = ({ setOpen, url }) => {
   return (
     <div
       id="chatbot-container"
-      className="fixed inset-0 bg-gray-900 bg-opacity-80 flex flex-col overflow-hidden"
+      className="fixed bottom-6 z-50 bg-gray-900 bg-opacity-80 flex flex-col overflow-hidden rounded-none h-full w-full"
+      style={{ bottom: "6rem" }} // Adjusts the distance from the bottom
     >
-      {/* Button to open chat (Fixed at the top) */}
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed top-5 right-5 bg-[#1eea66] text-black p-4 rounded-full shadow-md z-50"
-      >
-        <MdClose className="text-2xl" />
-      </button>
-
       {/* Chat Box Fullscreen */}
       <div className="flex flex-col h-full w-full overflow-hidden">
         <div className="flex items-center bg-[#1eea66] p-4 rounded-t-2xl">
