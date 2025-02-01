@@ -3,19 +3,29 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
+  --background: transparent; /* Transparent to match WordPress */
   --foreground: #171717;
 }
 
+/* Dark mode detect automatically */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: transparent; /* Change dark mode background to transparent */
+    --background: transparent; /* Transparent background */
     --foreground: #ededed;
   }
 }
 
+/* Ensure only chatbot body is affected, not the whole site */
 body {
   color: var(--foreground);
-  background: var(--background); /* This uses the updated --background variable */
+  background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Specific fix to apply styles ONLY inside iframe */
+html,
+body,
+#chatbot-container {  /* Make sure chatbot container has transparent bg */
+  background: transparent !important;
+  color: var(--foreground);
 }
