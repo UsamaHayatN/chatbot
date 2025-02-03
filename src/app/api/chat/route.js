@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { OpenAI } from "openai"; // Corrected import
+import { OpenAI } from "openai";
 
 // Set up OpenAI API configuration
 const openai = new OpenAI({
@@ -8,102 +8,91 @@ const openai = new OpenAI({
 
 // Predefined paragraph with Solvars' services
 const solvarsInfo = `
-At Solvars, we offer a wide range of digital services to help businesses thrive online, including web development, graphic design, digital marketing, and video editing. 
-Our web development services include custom website creation, eCommerce platform development, and responsive designs tailored to your needs. 
-We use technologies like MERN stack (MongoDB, Express.js, React.js, and Node.js) for building scalable, high-performance web applications. 
-Our digital marketing packages include SEO, social media management, and PPC campaigns to enhance your online presence. 
-Graphic design services cover branding, logo creation, and visual content. 
-We offer competitive pricing based on the scope of the project and can provide custom quotes for web development, marketing, or design services. 
-The timeline for web development projects depends on the complexity but typically takes a few weeks to a few months. 
-Once a project is completed, we also offer ongoing support and maintenance. 
-Our team is ready to assist you in booking a consultation, providing project updates, or answering any questions related to our services. 
-Solvars is located globally, and we happily work with international clients. You can easily reach out to us via our contact page or by messaging our customer support team. 
-We’re here to guide you through each step and help you achieve your business goals with innovative digital solutions.
+Solvars provides web development, graphic design, digital marketing, and video editing services. 
+We build modern websites using the MERN stack and offer SEO, social media management, and branding solutions. 
+Our team ensures top-quality results with ongoing support. Reach out anytime!
 `;
 
-// Predefined responses for small talk and greetings
+// Predefined responses for small talk
 const smallTalkResponses = {
-  hello: "Hello! I'm Solvars AI. How can I assist you today?",
-  hi: "Hi there! How can I help you with Solvars' services?",
-  hey: "Hey! What can I do for you today?",
-  "how are you":
-    "I'm just a chatbot, but I'm here and ready to help! How can I assist you?",
-  "what's up":
-    "Not much! Just here to assist you with Solvars' services. How can I help?",
-  bye: "Goodbye! Feel free to return anytime if you need help. Have a great day! 😊",
-  ok: "Alright! Let me know if you have any other questions. 😊",
-  okay: "Got it! If you need anything else, just ask. 😊",
-  "thank you": "You're very welcome! I'm here whenever you need help. 🚀",
-  thanks: "Anytime! Let me know if you have more questions. 😊",
+  hello: "Hey there! How can I help?",
+  hi: "Hi! What can I do for you?",
+  hey: "Hey! Need any help?",
+  "how are you": "I'm good! Thanks for asking. How about you?",
+  "what's up": "Not much! Just here to assist you. What's up with you?",
+  bye: "Take care! Catch you later. 😊",
+  ok: "Alright! Let me know if you need anything else. 😊",
+  okay: "Got it! I'm here if you have more questions. 😊",
+  "thank you": "You're welcome! Happy to help. 🚀",
+  thanks: "Anytime! Let me know if you need anything else. 😊",
 };
 
-// Common questions a user might ask a digital agency
+// Common service-related questions
 const agencyQuestions = {
   "what services do you offer?":
-    "We offer web development, graphic design, digital marketing, and video editing. Let me know if you need more details!",
+    "We do web development, digital marketing, design, and video editing. Need details?",
   "do you create eCommerce websites?":
-    "Yes! We specialize in creating eCommerce websites with secure payment gateways and user-friendly designs.",
-  "can you help with SEO?":
-    "Yes! We provide SEO services to improve your website’s ranking on search engines.",
+    "Yep! We build secure and user-friendly eCommerce sites.",
+  "can you help with SEO?": "Absolutely! We can boost your search rankings.",
   "how long does a project take?":
-    "Project timelines vary based on complexity. Typically, a website takes a few weeks to a few months to complete.",
+    "Depends on the project, but usually a few weeks to a couple of months.",
   "do you provide ongoing support?":
-    "Yes! We offer maintenance and support services even after your project is completed.",
+    "Yes! We’re here even after the project is done.",
   "how can I contact you?":
-    "You can reach us via our contact page or customer support. Let me know if you need more details!",
+    "You can reach us via our contact page or support team! Need the link?",
   "where is your company located?":
-    "Solvars is a global digital agency, and we work with international clients worldwide.",
+    "We're a global agency working with clients worldwide!",
 };
 
 // Pricing-related questions
 const pricingQuestions = {
   "how much does a website cost?":
-    "Pricing depends on your requirements. Please contact us for a custom quote!",
+    "It depends on what you need. Want a custom quote?",
   "what are your rates for digital marketing?":
-    "Our digital marketing packages vary based on your needs. Reach out to us for detailed pricing!",
+    "Pricing varies by package. I can share details if you’d like!",
   "how much do you charge for SEO services?":
-    "SEO pricing depends on the competition and scope of work. Contact us for a tailored quote!",
+    "SEO costs depend on your goals. Let’s discuss what you need!",
   "what is the cost of a logo design?":
-    "Logo design prices depend on complexity. Get in touch with us for a price estimate!",
-  "do you offer discounts?":
-    "We offer special pricing for bulk projects. Contact us to discuss available discounts.",
+    "Prices vary based on complexity. Want a quick estimate?",
+  "do you offer discounts?": "We do for bulk projects! Want to chat about it?",
 };
+
+let firstInteraction = true; // Track if it's the first message
 
 export async function POST(req) {
   try {
     const { message } = await req.json();
     const lowerCaseMessage = message.toLowerCase().trim();
 
-    // Check for small talk responses
+    // First-time introduction
+    if (firstInteraction) {
+      firstInteraction = false;
+      return NextResponse.json({
+        message: "Hey! I'm Solvars AI. How can I assist you today?",
+      });
+    }
+
+    // Check for predefined responses
     if (smallTalkResponses[lowerCaseMessage]) {
       return NextResponse.json({
         message: smallTalkResponses[lowerCaseMessage],
       });
     }
 
-    // Check for agency service-related questions
     if (agencyQuestions[lowerCaseMessage]) {
       return NextResponse.json({ message: agencyQuestions[lowerCaseMessage] });
     }
 
-    // Check for pricing-related questions
     if (pricingQuestions[lowerCaseMessage]) {
       return NextResponse.json({ message: pricingQuestions[lowerCaseMessage] });
     }
 
-    // OpenAI API for more complex queries
+    // OpenAI API for complex queries
     const systemMessage = `
-You are Solvars AI, a helpful chatbot representing Solvars. Your task is to respond to all user messages strictly based on the provided context. 
-Always introduce yourself as Solvars AI and ensure your answers are polite, professional, and relevant. 
-Use the following context to answer questions:
-
-${solvarsInfo}
-
-Instructions:
-- If the user asks about Solvars' services, pricing, timelines, or support, provide detailed and helpful responses based on the context.
-- If the question is irrelevant to Solvars' services, respond with: "I'm sorry, I can only answer questions related to Solvars' services."
-- Be autonomous and conversational when generating responses within the context of Solvars' information.
-`;
+    You are Solvars AI, a friendly and professional chatbot. Keep responses short, natural, and engaging. Use this context to answer:
+    ${solvarsInfo}
+    If a question is unrelated, say: "I can help with anything related to Solvars!".
+    `;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -113,14 +102,13 @@ Instructions:
       ],
     });
 
-    // Extract bot's reply from the response
     const botReply = response.choices[0].message.content;
 
     return NextResponse.json({ message: botReply });
   } catch (error) {
     console.error("Error with OpenAI API:", error);
     return NextResponse.json(
-      { error: "Failed to generate a response. Please try again later." },
+      { error: "Something went wrong. Try again later." },
       { status: 500 }
     );
   }
