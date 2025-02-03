@@ -22,7 +22,7 @@ const WidgetButton = () => {
       {/* Widget Button */}
       <div
         onClick={() => setOpen(!open)}
-        className="fixed bottom-5 right-5 w-16 h-16 bg-[#8AFFAC] rounded-full cursor-pointer shadow-lg z-50 flex items-center justify-center"
+        className="fixed bottom-5 right-5 w-16 h-16 bg-[#11E44F] rounded-full cursor-pointer shadow-lg z-50 flex items-center justify-center"
       >
         {open ? (
           <FiX className="text-black text-3xl" />
