@@ -86,7 +86,7 @@ const ChatBox = ({ setOpen, url }) => {
     >
       {/* Chat Box Fullscreen */}
       <div className="flex flex-col h-full w-full overflow-hidden">
-        <div className="flex items-center bg-[#1eea66] p-4 rounded-t-2xl">
+        <div className="flex items-center bg-[#8AFFAC] p-4 rounded-t-2xl">
           <span className="ml-3 text-black font-bold text-lg">Solvars AI</span>
           <button
             onClick={resetChat}
@@ -139,11 +139,11 @@ const ChatBox = ({ setOpen, url }) => {
 
               {msg.user === "me" && (
                 <div className="flex items-start w-full justify-end">
-                  <div className="bg-[#1eea66] text-black p-3 rounded-lg max-w-[75%] shadow-md text-sm md:text-base whitespace-pre-wrap">
+                  <div className="bg-[#8AFFAC] text-black p-3 rounded-lg max-w-[75%] shadow-md text-sm md:text-base whitespace-pre-wrap">
                     {msg.text}
                   </div>
                   <div className="flex-shrink-0 self-start ml-3">
-                    <FaUserAlt className="text-[#1eea66] text-2xl" />
+                    <FaUserAlt className="text-[#8AFFAC] text-2xl" />
                   </div>
                 </div>
               )}
@@ -179,7 +179,7 @@ const ChatBox = ({ setOpen, url }) => {
             onKeyDown={handleKeyDown} // Handle Enter key
             rows={1}
             placeholder="Type your message..."
-            className="flex-1 px-4 py-3 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1eea66] focus:border-[#1eea66] resize-none overflow-hidden"
+            className="flex-1 px-4 py-3 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8AFFAC] focus:border-[#8AFFAC] resize-none overflow-hidden"
             style={{ lineHeight: "1.5" }}
             onInput={(e) => {
               // Adjust the height dynamically
@@ -189,7 +189,7 @@ const ChatBox = ({ setOpen, url }) => {
           />
           <button
             onClick={sendMessage}
-            className="ml-3 bg-[#1eea66] text-black px-5 py-3 rounded-md font-semibold hover:bg-green-500 transition"
+            className="ml-3 bg-[#8AFFAC] text-black px-5 py-3 rounded-md font-semibold hover:bg-green-500 transition"
           >
             Send
           </button>
