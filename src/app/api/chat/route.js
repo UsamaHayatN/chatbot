@@ -23,11 +23,10 @@ We’re here to guide you through each step and help you achieve your business g
 
 export async function POST(req) {
   try {
-    const { message } = await req.json(); // Extract user message from the request body
-
+    const { message } = await req.json();
     const systemMessage = `
-You are Solvars.AI, a helpful chatbot representing Solvars. Your task is to respond to all user messages strictly based on the provided context. 
-Always introduce yourself as Solvars.AI and ensure your answers are polite, professional, and relevant. 
+You are Solvars ai, a helpful chatbot representing Solvars. Your task is to respond to all user messages strictly based on the provided context. 
+Always introduce yourself as Solvars ai and ensure your answers are polite, professional, and relevant. 
 Use the following context to answer questions:
 
 ${solvarsInfo}

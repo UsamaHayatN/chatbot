@@ -87,7 +87,7 @@ const ChatBox = ({ setOpen, url }) => {
       {/* Chat Box Fullscreen */}
       <div className="flex flex-col h-full w-full overflow-hidden">
         <div className="flex items-center bg-[#8AFFAC] p-4 rounded-t-2xl">
-          <span className="ml-3 text-black font-bold text-lg">Solvars AI</span>
+          <span className="ml-3 text-black font-bold text-lg">Solvars ai</span>
           <button
             onClick={resetChat}
             className="ml-auto text-black text-2xl font-semibold hover:text-gray-300"
