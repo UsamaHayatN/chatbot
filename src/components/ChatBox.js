@@ -81,8 +81,8 @@ const ChatBox = ({ setOpen, url }) => {
   return (
     <div
       id="chatbot-container"
-      className="fixed bottom-6 z-50 bg-gray-900 bg-opacity-80 flex flex-col overflow-hidden rounded-none h-full w-full"
-      style={{ bottom: "6rem" }} // Adjusts the distance from the bottom
+      className="fixed z-50 bg-gray-900 bg-opacity-80 flex flex-col overflow-hidden rounded-none w-full"
+      style={{ bottom: "6rem", height: "calc(100% - 6rem)" }}
     >
       {/* Chat Box Fullscreen */}
       <div className="flex flex-col h-full w-full overflow-hidden">
